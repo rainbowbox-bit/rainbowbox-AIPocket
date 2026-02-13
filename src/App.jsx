@@ -11,30 +11,40 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Extract unique categories
-  const categories = useMemo(() => {
+  // 正規化資料：將標題轉換為小寫以防萬一
+  const normalizedData = useMemo(() => {
     if (!data) return [];
-    // Categories are now derived from Sheet Names via the hook
-    const allCats = new Set(data.map(item => item.Category).filter(Boolean));
-    return Array.from(allCats); // Keep order from Sheets if possible, or .sort()
+    return data.map(item => ({
+      category: item.Category || item.category || '未分類',
+      title: item.Title || item.title || '無標題',
+      url: item.URL || item.url || item.Url || '#',
+      description: item.Description || item.description || '',
+      image: item.ImageURL || item.imageurl || item.Image || item.image || '',
+      tags: item.Tags || item.tags || ''
+    })).filter(item => item.title !== '無標題'); // 過濾掉空行
   }, [data]);
 
-  // Filter items
+  // 提取不重複的分類
+  const categories = useMemo(() => {
+    const allCats = new Set(normalizedData.map(item => item.category));
+    return Array.from(allCats).sort();
+  }, [normalizedData]);
+
+  // 過濾項目
   const filteredItems = useMemo(() => {
-    if (!data) return [];
-    return data.filter(item => {
-      const matchesCategory = activeCategory === 'All' || item.Category === activeCategory;
-      const matchesSearch = (item.Title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        (item.Tags?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+    return normalizedData.filter(item => {
+      const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+      const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.tags.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [data, activeCategory, searchTerm]);
+  }, [normalizedData, activeCategory, searchTerm]);
 
   if (loading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p>Loading your Kawaii world...</p>
+        <p>正在從魔法口袋翻找資料...</p>
       </div>
     );
   }
@@ -42,20 +52,19 @@ function App() {
   if (error) {
     return (
       <div className="error-container">
-        <h2>Oops! Something went wrong 🙈</h2>
-        <p>{error.message}</p>
-        <p>Check your Spreadsheet ID in <code>src/data/config.js</code></p>
+        <h2>哎呀！口袋卡住了 🙈</h2>
+        <p>請確認您的試算表已「發布至網路」並選擇為「CSV」格式。</p>
+        <p style={{ fontSize: '0.8rem', marginTop: '10px', opacity: 0.7 }}>{error.message}</p>
       </div>
     );
   }
 
-  // Demo Data Fallback if Sheet is empty/default
-  const displayItems = data.length > 0 ? filteredItems : [
-    { Category: 'Demo', Title: 'Welcome!', Description: 'This is a demo card. Connect your Google Sheet to see real data.', URL: '#', Tags: 'Demo, Welcome' },
-    { Category: 'Demo', Title: 'Customize Me', Description: 'Edit src/data/config.js to add your CSV URL.', URL: '#', Tags: 'Config' }
+  // 如果資料庫是空的，顯示範例
+  const displayItems = normalizedData.length > 0 ? filteredItems : [
+    { category: '說明', title: '歡迎來到魔法口袋！', description: '請在 Google Sheet 中填入資料，網頁就會自動更新喔！', url: '#', tags: '教學, 開始' }
   ];
 
-  const displayCategories = categories.length > 0 ? categories : ['Demo'];
+  const displayCategories = categories.length > 0 ? categories : ['說明'];
 
   return (
     <div className="app-container">
