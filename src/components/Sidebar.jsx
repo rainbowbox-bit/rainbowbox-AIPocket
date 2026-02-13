@@ -45,7 +45,7 @@ const Sidebar = ({ categories, activeCategory, onSelectCategory, mobileOpen, set
                 </nav>
 
                 <div className="sidebar-footer">
-                    <p>© 2026 Crafted with 袋鼠老師陪你幼教有愛</p>
+                    <p>© 2026 Crafted with <br />袋鼠老師陪你幼教有愛 🦘💖</p>
                 </div>
             </div>
 
