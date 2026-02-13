@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { SPREADSHEET_ID } from './data/config';
+import { PUBLISHED_CSV_URL } from './data/config';
 import useGoogleSheet from './hooks/useGoogleSheet';
 import Sidebar from './components/Sidebar';
 import Card from './components/Card';
 import './App.css';
 
 function App() {
-  const { data, loading, error } = useGoogleSheet(SPREADSHEET_ID);
+  const { data, loading, error } = useGoogleSheet(PUBLISHED_CSV_URL);
   const [activeCategory, setActiveCategory] = useState('All');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
