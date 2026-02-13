@@ -1,0 +1,62 @@
+:root {
+  /* Pastel Palette - Kawaii Style */
+  --color-bg: #FFFDF9;
+  --color-text: #4A4A4A;
+  --color-primary: #FFB7B2; /* Pastel Pink */
+  --color-primary-hover: #FF9E99;
+  --color-secondary: #B5EAD7; /* Mint Green */
+  --color-accent: #C7CEEA; /* Baby Blue */
+  --color-surface: #FFFFFF;
+  --color-border: #E0E0E0;
+
+  /* Spacing & Layout */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-body: 'Outfit', sans-serif;
+  --font-heading: 'Fredoka', cursive; /* Rounded font for Kawaii look */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+button {
+  font-family: var(--font-heading);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
