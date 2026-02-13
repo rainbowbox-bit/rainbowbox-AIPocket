@@ -1,27 +1,35 @@
 :root {
-  /* Pastel Palette - Kawaii Style */
-  --color-bg: #FFFDF9;
-  --color-text: #4A4A4A;
-  --color-primary: #FFB7B2; /* Pastel Pink */
-  --color-primary-hover: #FF9E99;
-  --color-secondary: #B5EAD7; /* Mint Green */
-  --color-accent: #C7CEEA; /* Baby Blue */
-  --color-surface: #FFFFFF;
-  --color-border: #E0E0E0;
+  /* Blackboard Theme */
+  --color-bg: #2C3E50;
+  /* Deep blackboard green/blue slate */
+  --color-text: #ECF0F1;
+  /* Chalk white */
+  --color-primary: #E74C3C;
+  /* Chalk Red */
+  --color-primary-hover: #C0392B;
+  --color-secondary: #F1C40F;
+  /* Chalk Yellow */
+  --color-accent: #3498DB;
+  /* Chalk Blue */
+  --color-surface: #34495E;
+  /* Slightly lighter slate for cards */
+  --color-border: #7F8C8D;
+  /* Grayish chalk dust */
 
   /* Spacing & Layout */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 1.5rem;
   --spacing-lg: 2rem;
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-sm: 4px;
+  /* Rougher edges for chalk feel */
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-full: 9999px;
 
   /* Typography */
   --font-body: 'Outfit', sans-serif;
-  --font-heading: 'Fredoka', cursive; /* Rounded font for Kawaii look */
+  --font-heading: 'Fredoka', cursive;
 }
 
 * {
@@ -36,12 +44,23 @@ body {
   color: var(--color-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  /* Grid pattern like graph paper or dusty board */
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-secondary);
+  /* Headings in Yellow Chalk */
 }
 
 a {

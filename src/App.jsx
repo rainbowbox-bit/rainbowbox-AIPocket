@@ -68,6 +68,11 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Fixed Top Bar */}
+      <div className="top-bar">
+        <h1>袋鼠老師的幼教魔法AI口袋</h1>
+      </div>
+
       <Sidebar
         categories={displayCategories}
         activeCategory={activeCategory}

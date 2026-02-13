@@ -1,24 +1,38 @@
 .card {
-    background: var(--color-surface);
-    border-radius: var(--radius-md);
+    background: transparent;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.3s ease;
-    border: 1px solid var(--color-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid var(--color-text);
+    /* White chalk border */
+    position: relative;
+    box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.1);
+    /* Simple harsh shadow */
+}
+
+.card:hover {
+    transform: translateY(-5px) rotate(-1deg);
+    /* Slight playful tilt */
+    box-shadow: 6px 6px 0px var(--color-secondary);
+    /* Yellow shadow on hover */
+    border-color: var(--color-secondary);
 }
 
 .card-image-container {
     height: 160px;
     overflow: hidden;
     position: relative;
+    border-bottom: 2px dashed var(--color-border);
 }
 
 .card-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    filter: brightness(0.9) contrast(1.1);
+    /* Slightly vintage look */
 }
 
 .card-placeholder {
@@ -28,8 +42,9 @@
     align-items: center;
     justify-content: center;
     font-size: 3rem;
-    color: white;
+    color: var(--color-border);
     font-family: var(--font-heading);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .card-content {
@@ -40,20 +55,25 @@
 }
 
 .card-title {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
+    /* Slightly larger */
     margin-bottom: var(--spacing-xs);
-    color: var(--color-text);
+    color: var(--color-secondary);
+    /* Yellow Title */
+    font-family: var(--font-heading);
 }
 
 .card-description {
-    font-size: 0.9rem;
-    color: #666;
+    font-size: 1rem;
+    color: var(--color-text);
     margin-bottom: var(--spacing-sm);
     flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+    /* Clean font for reading */
 }
 
 .card-tags {
@@ -64,31 +84,36 @@
 }
 
 .tag {
-    background-color: var(--color-bg);
-    color: #666;
-    font-size: 0.75rem;
-    padding: 4px 8px;
+    background-color: transparent;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    /* Blue Chalk */
+    font-size: 0.8rem;
+    padding: 2px 8px;
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
+    font-family: var(--font-heading);
 }
 
 .card-button {
-    background-color: var(--color-secondary);
-    /* Mint Green */
-    color: #333;
-    padding: 10px;
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    /* Red Chalk Border */
+    color: var(--color-primary);
+    padding: 8px;
     border-radius: var(--radius-sm);
     text-align: center;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s, background-color 0.2s;
+    transition: all 0.2s;
+    font-family: var(--font-heading);
 }
 
 .card-button:hover {
-    background-color: #A3DDC9;
-    transform: translateY(-2px);
-    opacity: 1;
+    background-color: var(--color-primary);
+    color: white;
+    transform: scale(1.02);
 }
