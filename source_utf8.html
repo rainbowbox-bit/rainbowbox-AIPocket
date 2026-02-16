@@ -1,0 +1,315 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 撌亙?曉窄蝞?| Liquid Pro Edition</title>
+    <meta name="description" content="銝? Google Sheet ???湔??AI 撌亙撟喳嚗?虜??AI?陛?梯ˊ雿I ???飛蝧???>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        @property --angle-1 { syntax: "<angle>"; inherits: false; initial-value: -75deg; }
+        @property --angle-2 { syntax: "<angle>"; inherits: false; initial-value: -45deg; }
+
+        :root {
+            --lg-text: #ffffff; --global--size: clamp(0.9rem, 2vw, 1.1rem);
+            --anim--hover-time: 400ms; --anim--hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
+            --spacing-medium: 16px; --spacing-large: 32px; --spacing-xlarge: 64px;
+            --border-radius-medium: 28px; /* ???啁???? */
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; }
+        body {
+            min-height: 100%; width: 100%; display: flex; flex-direction: column;
+            font-family: "Inter", "Noto Sans TC", sans-serif;
+            background: url('ai-tools-bg.png') no-repeat center center;
+            background-size: cover; background-attachment: fixed;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden;
+        }
+        #tsparticles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        h1, h2, h3, h4 { color: var(--lg-text); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); font-weight: 700; }
+        .site-title { font-size: clamp(1.5rem, 4vw, 2rem); margin: 0; }
+        .main-section-title { font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: var(--spacing-large); text-align: center; transition: opacity 0.3s ease; }
+        p { color: rgba(255, 255, 255, 0.85); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+        main { flex-grow: 1; width: 100%; padding: var(--spacing-xlarge) 0; }
+        .site-header { width: 100%; padding: var(--spacing-medium); }
+        .site-header .container { position: relative; z-index: 3; display: flex; justify-content: space-between; align-items: center; }
+        .site-branding { display: flex; align-items: center; gap: var(--spacing-medium); }
+        .header-logo-image { height: 50px; width: auto; border-radius: 50%; object-fit: cover; }
+        .site-footer { width: 100%; padding: var(--spacing-medium); text-align: center; }
+        .site-footer .container { justify-content: center; }
+
+        /* --- ?啣?嚗???雯????--- */
+        .glass-container {
+            position: relative;
+            border-radius: var(--border-radius-medium);
+            isolation: isolate; /* ?撅祆改?蝣箔??賢?蝝摰孵??*/
+            box-shadow: 0px 6px 21px -8px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-container::before {
+            content: ''; position: absolute; inset: 0; z-index: 0;
+            border-radius: inherit;
+            box-shadow: inset 0 0 12px -4px rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+        }
+        .glass-container::after {
+            content: ''; position: absolute; inset: 0; z-index: -1;
+            border-radius: inherit;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            filter: url(#glass-distortion); -webkit-filter: url(#glass-distortion);
+            pointer-events: none;
+        }
+
+        .tool-card { display: flex; flex-direction: column; height: 100%; }
+        .card-content { position: relative; z-index: 2; padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .tool-name { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .tool-description { font-size: 0.9rem; flex-grow: 1; margin-bottom: 1.5rem; }
+        .card-buttons { margin-top: auto; display: flex; flex-wrap: wrap; gap: var(--spacing-medium); }
+        #tools { padding: 0; }
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-large); }
+        #tool-controls { margin-bottom: var(--spacing-xlarge); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        #tool-filters { display: flex; flex-wrap: wrap; gap: var(--spacing-medium); justify-content: center; }
+        #search-input { background-color: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 0.75rem 1.5rem; color: white; font-family: inherit; font-size: 1rem; backdrop-filter: blur(5px); width: 100%; max-width: 400px; }
+        #search-input::placeholder { color: rgba(255,255,255,0.5); }
+        #search-input:focus { outline: none; border-color: var(--lg-highlight); }
+        .button-wrap { position: relative; z-index: 2; border-radius: 999vw; background: transparent; pointer-events: none; transition: all var(--anim--hover-time) var(--anim--hover-ease); font-size: var(--global--size); }
+        button { --border-width: clamp(1px, 0.0625em, 4px); all: unset; cursor: pointer; position: relative; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); pointer-events: auto; z-index: 3; background: linear-gradient(-75deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05)); border-radius: 999vw; box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, 0.05), inset 0 -0.125em 0.125em rgba(255, 255, 255, 0.5), 0 0.25em 0.125em -0.125em rgba(0, 0, 0, 0.2), 0 0 0.1em 0.25em inset rgba(255, 255, 255, 0.2), 0 0 0 0 rgba(255, 255, 255, 1); backdrop-filter: blur(clamp(1px, 0.125em, 4px)); -webkit-backdrop-filter: blur(clamp(1px, 0.125em, 4px)); transition: all var(--anim--hover-time) var(--anim--hover-ease); }
+        button:hover { transform: scale(0.975); }
+        button span { position: relative; display: block; user-select: none; -webkit-user-select: none; letter-spacing: -0.05em; font-weight: 500; font-size: 1em; color: #FFFFFF; text-shadow: 0em 0.1em 0.2em rgba(0, 0, 0, 0.25); transition: all var(--anim--hover-time) var(--anim--hover-ease); padding-inline: 1.5em; padding-block: 0.875em; white-space: nowrap; }
+        button span::after { content: ""; display: block; position: absolute; z-index: 1; width: calc(100% - var(--border-width)); height: calc(100% - var(--border-width)); top: calc(0% + var(--border-width) / 2); left: calc(0% + var(--border-width) / 2); box-sizing: border-box; border-radius: 999vw; overflow: clip; background: linear-gradient(var(--angle-2), rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 40% 50%, rgba(255, 255, 255, 0) 55%); z-index: 3; mix-blend-mode: screen; pointer-events: none; background-size: 200% 200%; background-position: 0% 50%; background-repeat: no-repeat; transition: background-position calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease), --angle-2 calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease); }
+        button:hover span::after { background-position: 25% 50%; }
+        button:active span::after { background-position: 50% 15%; --angle-2: -15deg; }
+        button::after { content: ""; position: absolute; z-index: 1; inset: 0; border-radius: 999vw; width: calc(100% + var(--border-width)); height: calc(100% + var(--border-width)); top: calc(0% - var(--border-width) / 2); left: calc(0% - var(--border-width) / 2); padding: var(--border-width); box-sizing: border-box; background: conic-gradient(from var(--angle-1) at 50% 50%, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 5% 40%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 60% 95%, rgba(0, 0, 0, 0.5)), linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; transition: all var(--anim--hover-time) var(--anim--hover-ease), --angle-1 500ms ease; box-shadow: inset 0 0 0 calc(var(--border-width) / 2) rgba(255, 255, 255, 0.5); }
+        button:hover::after { --angle-1: -125deg; }
+        button:active::after { --angle-1: -75deg; }
+        @keyframes subtle-shake { 0% { transform: translateY(-5px) scale(1.02) rotate(0deg); } 33% { transform: translateY(-5px) scale(1.02) rotate(-1.5deg); } 66% { transform: translateY(-5px) scale(1.02) rotate(1.5deg); } 100% { transform: translateY(-5px) scale(1.02) rotate(0deg); } }
+        .interactive-card.glass-container::before { z-index: 1; /* Raise tint layer above content layer's z-index 0 */ }
+        .interactive-card.glass-container .card-content { z-index: 2; }
+        .interactive-card.glass-container::after { z-index: 0; }
+        .interactive-card.glass-container:hover { animation: subtle-shake 0.5s ease-out; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 0, 0, 0.2); transform: translateY(-5px) scale(1.02); }
+        .site-navigation { display: flex; align-items: center; gap: var(--spacing-medium); }
+        @media (max-width: 992px) { .site-header .container { flex-direction: column; gap: var(--spacing-large); } .site-navigation { flex-wrap: wrap; justify-content: center; } }
+    </style>
+</head>
+<body>
+    <!-- SVG Filter Definition -->
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <filter id="glass-distortion" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="2" seed="5" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="50" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Particles Container -->
+    <div id="tsparticles"></div>
+    
+    <header class="site-header glass-container">
+        <div class="container">
+            <div class="site-branding">
+                <img src="?寞?葦蝛箇?.png" alt="?寞?葦 Logo" class="header-logo-image">
+                <h1 class="site-title">AI 撌亙?曉窄蝞?/h1>
+            </div>
+            <nav class="site-navigation">
+                <div class="button-wrap">
+                    <button onclick="window.open('https://www.facebook.com/FunFun.AI.Teacher/', '_blank')"><span>?寞?葦?犖蝬脩?</span></button>
+                </div>
+                <div class="button-wrap">
+                    <button onclick="window.open('https://chunsheng612.github.io/FunFun.AI-Website/', '_blank')"><span>?寞?葦???脩雯蝡?/span></button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="tools">
+            <div class="container">
+                <h2 class="main-section-title">AI 撌亙蝮質汗</h2>
+                 <div id="tool-controls">
+                    <div id="tool-filters">
+                        <div class="button-wrap"><button data-filter="all"><span>憿舐內?券</span></button></div>
+                        <div class="button-wrap"><button data-filter="撣貊AI"><span>撣貊 AI</span></button></div>
+                        <div class="button-wrap"><button data-filter="AI蝪∪"><span>AI 蝪∪</span></button></div>
+                        <div class="button-wrap"><button data-filter="AI??"><span>AI ??</span></button></div>
+                        <div class="button-wrap"><button data-filter="AI??"><span>AI ??</span></button></div>
+                        <div class="button-wrap"><button data-filter="AI?單?"><span>AI ?單?</span></button></div>
+                        <div class="button-wrap"><button data-filter="AI?"><span>AI ?</span></button></div>
+                        <div class="button-wrap"><button data-filter="AI撌亙"><span>AI 撌亙</span></button></div>
+                    </div>
+                    <div id="tool-search">
+                         <input type="text" id="search-input" placeholder="??撌亙...">
+                    </div>
+                 </div>
+                <div class="tool-grid" id="tool-grid">
+                    <h2 style="text-align: center; grid-column: 1 / -1;">甇?敺?Google Sheet 頛鞈?...</h2>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer glass-container">
+        <div class="container">
+            <p>穢 AI 撌亙?曉窄蝞? All Rights Reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.4.0/tsparticles.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzeeOpI74o-BeIbmA9Syf_RQMeyP6ofgsnXhTapgh78r2cLQcf4Oj-2FOAFaMCK2h-0/exec';
+            const toolGrid = document.getElementById('tool-grid');
+            
+            // --- 蝎??寞?閮剖? ---
+            tsParticles.load({
+                id: "tsparticles",
+                options: {
+                    fpsLimit: 60,
+                    background: { color: { value: "transparent" } },
+                    particles: {
+                        number: { value: 30, density: { enable: true, area: 800 } },
+                        color: { value: ["#ffffff", "#a7a7d1"] },
+                        shape: { type: "circle" },
+                        opacity: { value: { min: 0.1, max: 0.4 } },
+                        size: { value: { min: 1, max: 3 } },
+                        links: { enable: true, distance: 150, color: "#ffffff", opacity: 0.1, width: 1 },
+                        move: { enable: true, speed: 1, direction: "none", random: true, straight: false, outModes: { default: "out" } }
+                    },
+                    interactivity: { events: { onHover: { enable: true, mode: "bubble" } }, modes: { bubble: { distance: 200, size: 5, duration: 2, opacity: 1 } } },
+                    detectRetina: true,
+                },
+            });
+
+ // ... ????撘Ⅳ ...
+
+            async function loadTools() {
+                // 撠?'?函??潔??啁雯頝舐?CSV蝬脣?' ?踵???冽郊撽?銴ˊ??URL
+                const PUBLISHED_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTVOFfRvEKfrgkFGJoqnxIZwWeZ2UIFYahAaCvU-OWp9Puv5c4DHdPQFve5CQBrBicPIfG72dpNYa1E/pub?output=csv'; 
+                
+                try {
+                    const response = await fetch(PUBLISHED_CSV_URL);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const csvText = await response.text();
+                    const tools = parseCSV(csvText);
+
+                    toolGrid.innerHTML = '';
+                    if (!tools || tools.length === 0) {
+                        toolGrid.innerHTML = '<h2 style="text-align: center; grid-column: 1 / -1;">?曆??啣極?瑁???銵冽?箇征??/h2>';
+                        return;
+                    }
+
+                    tools.forEach(tool => {
+                        // 憒? ManualURL ?航?箇征嚗隞亙?銝??                        const manualUrl = tool.ManualURL ? tool.ManualURL.trim() : '';
+                        let manualButtonHTML = '';
+                        if (manualUrl !== '') {
+                            manualButtonHTML = `<div class="button-wrap"><button onclick="window.open('${manualUrl}', '_blank')"><span>摮貊???</span></button></div>`;
+                        }
+                        
+                        const cardHTML = `
+                            <div class="tool-card glass-container interactive-card" data-category="${tool.Category}">
+                                <div class="card-content">
+                                    <h4 class="tool-name">${tool.Name}</h4>
+                                    <p class="tool-description">${tool.Description}</p>
+                                    <div class="card-buttons">
+                                        <div class="button-wrap">
+                                            <button onclick="window.open('${tool.ToolURL}', '_blank')"><span>??? ??/span></button>
+                                        </div>
+                                        ${manualButtonHTML}
+                                    </div>
+                                </div>
+                            </div>`;
+                        toolGrid.insertAdjacentHTML('beforeend', cardHTML);
+                    });
+                    
+                    initializeFiltering();
+                } catch (error) {
+                    console.error('Error fetching tools:', error);
+                    toolGrid.innerHTML = '<h2 style="text-align: center; grid-column: 1 / -1;">?⊥?頛撌亙鞈?嚗?瑼Ｘ蝬脰楝????雿身摰?/h2>';
+                }
+            }
+            
+            // ?啣?銝???拙撘?閫?? CSV ??
+            function parseCSV(csvText) {
+                const lines = csvText.trim().split('\n');
+                if (lines.length < 2) return []; // 憒?瘝?鞈?銵?餈?蝛粹??
+                // ??璅 (蝚砌?銵?嚗???拐辣??key
+                const headers = lines[0].split(',').map(header => header.trim());
+                
+                const tools = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(value => value.trim());
+                    const tool = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        // 蝣箔? CSV 甈??迂?蝔?蝣潔葉雿輻??(Category, Name, Description, ToolURL, ManualURL) 銝??                        tool[headers[j]] = values[j] || '';
+                    }
+                    tools.push(tool);
+                }
+                return tools;
+            }
+
+            
+            function initializeFiltering() {
+                const filterContainer = document.getElementById('tool-filters');
+                const searchInput = document.getElementById('search-input');
+                const mainTitle = document.querySelector('.main-section-title');
+                const toolCards = document.querySelectorAll('.tool-card'); 
+
+                function filterAndSearchTools() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    const activeFilterBtn = filterContainer.querySelector('button.active');
+                    const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
+
+                    toolCards.forEach(card => {
+                        const category = card.dataset.category;
+                        const cardText = card.textContent.toLowerCase();
+                        const filterMatch = (activeFilter === 'all' || category === activeFilter);
+                        const searchMatch = (searchTerm === '' || cardText.includes(searchTerm));
+                        card.style.display = (filterMatch && searchMatch) ? 'flex' : 'none';
+                    });
+                }
+
+                if (filterContainer) {
+                    const filterButtons = filterContainer.querySelectorAll('button');
+                    filterButtons[0]?.classList.add('active'); 
+
+                    filterContainer.addEventListener('click', (event) => {
+                        const clickedButton = event.target.closest('button');
+                        if (clickedButton) {
+                            filterButtons.forEach(button => button.classList.remove('active'));
+                            clickedButton.classList.add('active');
+                            
+                            // --- ??璅?霈 ---
+                            const buttonText = clickedButton.querySelector('span').textContent;
+                            mainTitle.style.opacity = 0; // 瘛∪
+                            setTimeout(() => {
+                                if (clickedButton.dataset.filter === 'all') {
+                                    mainTitle.textContent = 'AI 撌亙蝮質汗';
+                                } else {
+                                    mainTitle.textContent = buttonText;
+                                }
+                                mainTitle.style.opacity = 1; // 瘛∪
+                            }, 150);
+
+                            filterAndSearchTools();
+                        }
+                    });
+                }
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', filterAndSearchTools);
+                }
+                
+                filterAndSearchTools();
+            }
+
+            loadTools();
+        });
+    </script>
+</body>
+</html>

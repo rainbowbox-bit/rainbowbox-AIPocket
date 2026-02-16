@@ -1,8 +1,10 @@
 import React from 'react';
-import { Menu, X, FolderHeart } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { Menu, X, Rocket, Sparkles, Facebook, Highlighter } from 'lucide-react';
+import { SOCIAL_LINKS } from '../data/config';
 import './Sidebar.css';
 
-const Sidebar = ({ categories, activeCategory, onSelectCategory, mobileOpen, setMobileOpen }) => {
+const Sidebar = ({ mobileOpen, setMobileOpen }) => {
     return (
         <>
             <button
@@ -12,36 +14,44 @@ const Sidebar = ({ categories, activeCategory, onSelectCategory, mobileOpen, set
                 {mobileOpen ? <X /> : <Menu />}
             </button>
 
-            <div className={`sidebar ${mobileOpen ? 'open' : ''}`}>
-                <div className="sidebar-header">
-                    <h2>My Space</h2>
+            <div className={`sidebar glass ${mobileOpen ? 'open' : ''}`}>
+                <div className="sidebar-brand">
+                    <div className="brand-icon">🦘</div>
+                    <h2>袋鼠老師</h2>
                 </div>
 
                 <nav className="sidebar-nav">
-                    <button
-                        className={`nav-item ${activeCategory === 'All' ? 'active' : ''}`}
-                        onClick={() => {
-                            onSelectCategory('All');
-                            setMobileOpen(false);
-                        }}
-                    >
-                        <FolderHeart size={18} />
-                        <span>All Everything</span>
-                    </button>
-
-                    {categories.map((cat) => (
-                        <button
-                            key={cat}
-                            className={`nav-item ${activeCategory === cat ? 'active' : ''}`}
-                            onClick={() => {
-                                onSelectCategory(cat);
-                                setMobileOpen(false);
-                            }}
+                    <div className="nav-group">
+                        <p className="nav-label">資源庫</p>
+                        <NavLink
+                            to="/toolbox"
+                            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                            onClick={() => setMobileOpen(false)}
                         >
-                            <FolderHeart size={18} style={{ opacity: 0.5 }} />
-                            <span>{cat}</span>
-                        </button>
-                    ))}
+                            <Rocket size={18} />
+                            <span>AI 工具箱</span>
+                        </NavLink>
+                        <NavLink
+                            to="/common-ai"
+                            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                            onClick={() => setMobileOpen(false)}
+                        >
+                            <Sparkles size={18} />
+                            <span>常用 AI 工具</span>
+                        </NavLink>
+                    </div>
+
+                    <div className="nav-group">
+                        <p className="nav-label">個人連結</p>
+                        <a href={SOCIAL_LINKS.vocus} target="_blank" rel="noopener noreferrer" className="nav-item">
+                            <Highlighter size={18} />
+                            <span>幼教老師心裡話</span>
+                        </a>
+                        <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="nav-item">
+                            <Facebook size={18} />
+                            <span>FB 粉絲專頁</span>
+                        </a>
+                    </div>
                 </nav>
 
                 <div className="sidebar-footer">

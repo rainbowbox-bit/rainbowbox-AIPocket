@@ -1,109 +1,120 @@
 .sidebar {
-    width: 240px;
-    background-color: transparent;
-    /* Blend with board */
-    border-right: 2px dashed rgba(255, 255, 255, 0.2);
-    /* Chalk line separator */
-    height: calc(100vh - 70px);
+    width: 280px;
+    height: 100vh;
     position: fixed;
     left: 0;
-    top: 70px;
+    top: 0;
+    padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-md);
-    z-index: 900;
-    transition: transform 0.3s ease;
-    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0 30px 30px 0;
 }
 
-.sidebar-header {
-    display: none;
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: var(--spacing-lg);
+    padding: 0 10px;
+}
+
+.brand-icon {
+    font-size: 2rem;
+}
+
+.sidebar-brand h2 {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
 }
 
 .sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    overflow-y: auto;
+}
+
+.nav-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    flex: 1;
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-text-sub);
+    margin-bottom: 5px;
+    padding-left: 15px;
+    letter-spacing: 1.5px;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 15px;
-    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-    /* Subtle rough box */
-    text-align: left;
-    font-family: var(--font-body);
-    font-size: 1.1rem;
-    color: var(--color-text);
-    transition: all 0.2s;
-    width: 100%;
-    border: 1px solid transparent;
-    /* Reserve space for border */
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    color: var(--color-text-main);
+    transition: all 0.3s ease;
 }
 
 .nav-item:hover {
-    color: var(--color-secondary);
+    background: rgba(255, 255, 255, 0.3);
     transform: translateX(5px);
-    text-decoration: underline;
-    text-decoration-style: wavy;
-    text-underline-offset: 4px;
+    color: var(--color-accent);
 }
 
 .nav-item.active {
-    border: 2px solid var(--color-secondary);
-    /* Circled in yellow chalk */
-    color: var(--color-secondary);
-    font-weight: 700;
-    background: rgba(253, 203, 110, 0.05);
+    background: var(--color-accent);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
 }
 
 .sidebar-footer {
     margin-top: auto;
-    padding-top: var(--spacing-md);
+    padding: 15px;
     text-align: center;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.5);
-    font-family: var(--font-body);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.85rem;
+    color: var(--color-text-sub);
+    border-top: 1px solid var(--color-glass-border);
 }
 
-/* Mobile Styles */
+/* Mobile Toggle */
 .mobile-toggle {
     position: fixed;
-    top: 15px;
-    right: 15px;
+    top: 1.5rem;
+    left: 1.5rem;
     z-index: 1100;
-    background: transparent;
-    color: var(--color-secondary);
-    padding: 8px;
-    border: 2px solid var(--color-secondary);
-    /* Circle button */
-    border-radius: 50%;
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--color-glass-border);
+    padding: 10px;
+    border-radius: 12px;
     display: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .overlay {
     position: fixed;
-    top: 70px;
+    top: 0;
     left: 0;
     width: 100%;
-    height: calc(100vh - 70px);
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 800;
-    backdrop-filter: blur(2px);
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    z-index: 900;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .sidebar {
         transform: translateX(-100%);
-        background-color: var(--color-bg);
-        /* Opaque on mobile */
-        border-right: none;
-        width: 280px;
-        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+        border-radius: 0;
     }
 
     .sidebar.open {
@@ -111,6 +122,6 @@
     }
 
     .mobile-toggle {
-        display: block;
+        display: flex;
     }
 }
