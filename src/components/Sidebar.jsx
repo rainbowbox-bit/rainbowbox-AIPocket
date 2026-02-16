@@ -1,10 +1,19 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Menu, X, Rocket, Sparkles, Facebook, Highlighter } from 'lucide-react';
+import { X, Menu, Grid, Heart, BookOpen, Users, FolderOpen } from 'lucide-react';
 import { SOCIAL_LINKS } from '../data/config';
 import './Sidebar.css';
 
-const Sidebar = ({ mobileOpen, setMobileOpen }) => {
+const Sidebar = ({ categories, activeCategory, onSelectCategory, mobileOpen, setMobileOpen }) => {
+
+    // Helper to pick an icon for categories (optional fun touch)
+    const getIconForCategory = (cat) => {
+        if (cat.includes('備課') || cat.includes('教學')) return <BookOpen size={18} />;
+        if (cat.includes('特教') || cat.includes('愛')) return <Heart size={18} />;
+        if (cat.includes('行政') || cat.includes('園務')) return <FolderOpen size={18} />;
+        if (cat.includes('溝通') || cat.includes('親師')) return <Users size={18} />;
+        return <Grid size={18} />;
+    };
+
     return (
         <>
             <button
@@ -17,39 +26,46 @@ const Sidebar = ({ mobileOpen, setMobileOpen }) => {
             <div className={`sidebar glass ${mobileOpen ? 'open' : ''}`}>
                 <div className="sidebar-brand">
                     <div className="brand-icon">🦘</div>
-                    <h2>袋鼠老師</h2>
+                    <h2>分類與過濾</h2>
                 </div>
 
                 <nav className="sidebar-nav">
                     <div className="nav-group">
-                        <p className="nav-label">資源庫</p>
-                        <NavLink
-                            to="/toolbox"
-                            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                            onClick={() => setMobileOpen(false)}
+                        <p className="nav-label">工具分類</p>
+
+                        <button
+                            className={`nav-item ${activeCategory === 'All' ? 'active' : ''}`}
+                            onClick={() => {
+                                onSelectCategory('All');
+                                setMobileOpen(false);
+                            }}
                         >
-                            <Rocket size={18} />
-                            <span>AI 工具箱</span>
-                        </NavLink>
-                        <NavLink
-                            to="/common-ai"
-                            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                            onClick={() => setMobileOpen(false)}
-                        >
-                            <Sparkles size={18} />
-                            <span>常用 AI 工具</span>
-                        </NavLink>
+                            <Grid size={18} />
+                            <span>全部顯示</span>
+                        </button>
+
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                className={`nav-item ${activeCategory === cat ? 'active' : ''}`}
+                                onClick={() => {
+                                    onSelectCategory(cat);
+                                    setMobileOpen(false);
+                                }}
+                            >
+                                {getIconForCategory(cat)}
+                                <span>{cat}</span>
+                            </button>
+                        ))}
                     </div>
 
-                    <div className="nav-group">
-                        <p className="nav-label">個人連結</p>
+                    <div className="nav-group" style={{ marginTop: 'auto' }}>
+                        <p className="nav-label">袋鼠老師的連結</p>
                         <a href={SOCIAL_LINKS.vocus} target="_blank" rel="noopener noreferrer" className="nav-item">
-                            <Highlighter size={18} />
-                            <span>幼教老師心裡話</span>
+                            <span>📖 幼教老師心裡話</span>
                         </a>
                         <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" className="nav-item">
-                            <Facebook size={18} />
-                            <span>FB 粉絲專頁</span>
+                            <span>👍 FB 粉絲專頁</span>
                         </a>
                     </div>
                 </nav>

@@ -1,0 +1,76 @@
+.top-navigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--color-glass-border);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+}
+
+.nav-container {
+    display: flex;
+    gap: 20px;
+    padding: 0 var(--spacing-md);
+}
+
+.top-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    color: var(--color-text-sub);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-nav-item:hover {
+    background: rgba(108, 92, 231, 0.05);
+    color: var(--color-accent);
+    transform: translateY(-2px);
+}
+
+.top-nav-item.active {
+    background: var(--color-accent);
+    color: white;
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .top-navigation {
+        justify-content: flex-end;
+        /* Make space for hamburger on left */
+        padding-right: 15px;
+        height: 60px;
+    }
+
+    .nav-container {
+        gap: 8px;
+    }
+
+    .top-nav-item span {
+        display: none;
+        /* Hide text on small screens, show icons only */
+    }
+
+    .top-nav-item {
+        padding: 10px;
+    }
+
+    .top-nav-item.active span {
+        display: block;
+        /* Show text for active item */
+        font-size: 0.9rem;
+    }
+}
