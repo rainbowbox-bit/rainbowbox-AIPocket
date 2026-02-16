@@ -19,7 +19,7 @@ const TopNavigation = () => {
                     className={({ isActive }) => `top-nav-item ${isActive ? 'active' : ''}`}
                 >
                     <Sparkles size={18} />
-                    <span>常用 AI 工具</span>
+                    <span>常用 AI 工具箱</span>
                 </NavLink>
             </div>
         </nav>

@@ -19,7 +19,7 @@ function App() {
         <Routes>
           <Route
             path="/toolbox"
-            element={<ToolPage csvUrl={TOOLBOX_CSV_URL} title="袋鼠老師的自製 AI 工具" />}
+            element={<ToolPage csvUrl={TOOLBOX_CSV_URL} title="袋鼠老師自製 AI 工具" />}
           />
           <Route
             path="/common-ai"
