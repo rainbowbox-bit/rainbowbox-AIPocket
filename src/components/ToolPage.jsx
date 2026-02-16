@@ -13,26 +13,35 @@ const ToolPage = ({ csvUrl, title }) => {
     // Data Normalization
     const normalizedData = useMemo(() => {
         if (!data) return [];
-        return data.map(item => ({
-            category: item.Category || item.category || '未分類',
-            title: item.Title || item.title || item.Name || '無標題',
-            url: item.URL || item.url || item.Url || item.ToolURL || '#',
-            description: item.Description || item.description || '',
-            image: item.ImageURL || item.imageurl || item.Image || item.image || '',
-            tags: item.Tags || item.tags || ''
-        })).filter(item => item.title !== '無標題');
+        return data.map(item => {
+            const rawCategory = item.Category || item.category || '未分類';
+            // Split by comma or slash, then trim whitespace
+            const categoryArray = rawCategory.split(/[,\/]/).map(c => c.trim()).filter(c => c !== '');
+
+            return {
+                category: categoryArray,
+                title: item.Title || item.title || item.Name || '無標題',
+                url: item.URL || item.url || item.Url || item.ToolURL || '#',
+                description: item.Description || item.description || '',
+                image: item.ImageURL || item.imageurl || item.Image || item.image || '',
+                tags: item.Tags || item.tags || ''
+            };
+        }).filter(item => item.title !== '無標題');
     }, [data]);
 
-    // Extract Categories
+    // Extract Categories (Individual unique categories)
     const categories = useMemo(() => {
-        const allCats = new Set(normalizedData.map(item => item.category));
+        const allCats = new Set();
+        normalizedData.forEach(item => {
+            item.category.forEach(cat => allCats.add(cat));
+        });
         return Array.from(allCats).sort();
     }, [normalizedData]);
 
     // Filter Items
     const filteredItems = useMemo(() => {
         return normalizedData.filter(item => {
-            const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+            const matchesCategory = activeCategory === 'All' || item.category.includes(activeCategory);
             const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.tags.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesCategory && matchesSearch;
