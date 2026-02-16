@@ -26,7 +26,7 @@ const Sidebar = ({ categories, activeCategory, onSelectCategory, mobileOpen, set
             <div className={`sidebar glass ${mobileOpen ? 'open' : ''}`}>
                 <div className="sidebar-brand">
                     <div className="brand-icon">🦘</div>
-                    <h2>分類與過濾</h2>
+                    <h2>袋鼠老師的幼教魔法口袋</h2>
                 </div>
 
                 <nav className="sidebar-nav">
