@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>袋鼠老師 | AI 工具箱</title>
+    <meta name="description" content="袋鼠老師推薦的通用 AI 工具，包含常用AI、AI簡報、AI搜尋等實用工具。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@500&display=swap" rel="stylesheet">
+    <style>
+        @property --angle-1 { syntax: "<angle>"; inherits: false; initial-value: -75deg; }
+        @property --angle-2 { syntax: "<angle>"; inherits: false; initial-value: -45deg; }
+
+        :root {
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255,255,255,0.80);
+            --color-glass-bg: rgba(255,255,255,0.04);
+            --color-glass-highlight: rgba(255,255,255,0.25);
+            --color-input-bg: rgba(0,0,0,0.25);
+            --color-input-border: rgba(255,255,255,0.25);
+            --color-input-placeholder: rgba(255,255,255,0.45);
+            --color-accent: #b0aee8;
+            --color-button-shadow-1: rgba(0,0,0,0.1);
+            --color-button-shadow-2: rgba(255,255,255,0.4);
+            --color-button-shadow-3: rgba(0,0,0,0.3);
+            --color-button-shadow-4: rgba(255,255,255,0.15);
+            --anim--hover-time: 400ms;
+            --anim--hover-ease: cubic-bezier(0.25,1,0.5,1);
+            --spacing-small: 8px;
+            --spacing-medium: 16px;
+            --spacing-large: 32px;
+            --spacing-xlarge: 64px;
+            --border-radius-medium: 24px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; scroll-behavior: smooth; }
+        body {
+            min-height: 100%; width: 100%; display: flex; flex-direction: column;
+            font-family: "Inter","Noto Sans TC",sans-serif;
+            background: radial-gradient(ellipse at top,#2d1060 0%,#0d1b4b 60%,#050a20 100%) fixed;
+            -webkit-font-smoothing: antialiased; overflow-x: hidden;
+            color: var(--color-text-secondary);
+        }
+
+        #tsparticles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        h1,h2,h3,h4 { color: var(--color-text-primary); font-weight: 700; }
+        p { color: var(--color-text-secondary); }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+        main { flex-grow: 1; width: 100%; padding: var(--spacing-large) 0 var(--spacing-xlarge); }
+
+        .glass-container {
+            position: relative; border-radius: var(--border-radius-medium); isolation: isolate;
+            box-shadow: 0px 6px 21px -8px rgba(0,0,0,0.6);
+            transition: box-shadow 0.4s cubic-bezier(0.175,0.885,0.32,1.275), transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+            background-color: var(--color-glass-bg);
+        }
+        .glass-container::before { content:''; position:absolute; inset:0; z-index:0; border-radius:inherit; box-shadow:inset 0 0 12px -4px var(--color-glass-highlight); pointer-events:none; }
+        .glass-container::after  { content:''; position:absolute; inset:0; z-index:-1; border-radius:inherit; backdrop-filter:blur(15px); -webkit-backdrop-filter:blur(15px); pointer-events:none; }
+
+        .site-header { width:100%; padding:var(--spacing-medium); position:sticky; top:0; z-index:100; }
+        .site-header .container { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--spacing-medium); }
+        .site-branding { display:flex; align-items:center; gap:12px; }
+        .header-logo { width:44px; height:44px; border-radius:50%; object-fit:cover; }
+        .site-title { font-size:clamp(1.1rem,3vw,1.5rem); margin:0; }
+        .main-nav { display:flex; align-items:center; gap:var(--spacing-small); }
+
+        #tool-controls { padding:var(--spacing-xlarge) 0 var(--spacing-large); text-align:center; }
+        .main-section-title { font-size:clamp(1.8rem,4vw,2.5rem); margin-bottom:var(--spacing-large); transition:opacity 0.3s ease; }
+        #filter-buttons { display:flex; flex-wrap:wrap; justify-content:center; gap:var(--spacing-small); margin-bottom:var(--spacing-large); }
+
+        #search-input { background-color:var(--color-input-bg); border:1px solid var(--color-input-border); border-radius:999px; padding:0.75rem 1.5rem; color:var(--color-text-primary); font-family:inherit; font-size:1rem; backdrop-filter:blur(5px); width:100%; max-width:400px; transition:border-color 0.3s ease; }
+        #search-input::placeholder { color:var(--color-input-placeholder); }
+        #search-input:focus { outline:none; border-color:var(--color-accent); }
+
+        .tool-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:var(--spacing-large); }
+        .tool-card { display:flex; flex-direction:column; height:100%; }
+        .tool-card.hidden { display:none !important; }
+
+        @keyframes subtle-shake {
+            0%,100% { transform:translateY(-5px) scale(1.02) rotate(0deg); }
+            33%  { transform:translateY(-5px) scale(1.02) rotate(-1.5deg); }
+            66%  { transform:translateY(-5px) scale(1.02) rotate(1.5deg); }
+        }
+        .interactive-card.glass-container:hover { animation:subtle-shake 0.5s ease-out; box-shadow:0 10px 30px rgba(0,0,0,0.4),0 0 40px rgba(120,80,255,0.1); transform:translateY(-5px) scale(1.02); }
+
+        .card-content { position:relative; z-index:2; padding:1.5rem; flex-grow:1; display:flex; flex-direction:column; }
+        .tool-name { font-size:1.2rem; margin-bottom:0.5rem; }
+        .tool-description { font-size:0.9rem; flex-grow:1; margin-bottom:1.5rem; line-height:1.6; }
+        .card-buttons { margin-top:auto; display:flex; flex-wrap:wrap; gap:var(--spacing-small); }
+
+        .button-wrap { position:relative; z-index:2; border-radius:999vw; background:transparent; pointer-events:none; flex-shrink:0; }
+        .button-wrap button { --border-width:2px; all:unset; cursor:pointer; position:relative; -webkit-tap-highlight-color:rgba(0,0,0,0); pointer-events:auto; z-index:3; background:linear-gradient(-75deg,rgba(255,255,255,0.04),rgba(255,255,255,0.18),rgba(255,255,255,0.04)); border-radius:999vw; box-shadow:inset 0 0.125em 0.125em var(--color-button-shadow-1),inset 0 -0.125em 0.125em var(--color-button-shadow-2),0 0.25em 0.125em -0.125em var(--color-button-shadow-3),0 0 0.1em 0.25em inset var(--color-button-shadow-4); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); transition:all var(--anim--hover-time) var(--anim--hover-ease); display:flex; justify-content:center; width:100%; }
+        .button-wrap button:hover { transform:scale(0.975); }
+        .button-wrap button:active { transform:scale(0.95); background:linear-gradient(-75deg,rgba(120,80,255,0.15),rgba(160,120,255,0.35),rgba(120,80,255,0.15)); }
+        .button-wrap button.active { background:linear-gradient(-75deg,rgba(120,80,255,0.2),rgba(160,120,255,0.4),rgba(120,80,255,0.2)); }
+        .button-wrap button span { position:relative; display:block; user-select:none; -webkit-user-select:none; font-weight:500; font-size:0.9rem; color:var(--color-text-primary); text-shadow:0em 0.1em 0.2em rgba(0,0,0,0.3); transition:all var(--anim--hover-time) var(--anim--hover-ease); padding:0.8em 1.5em; white-space:nowrap; width:100%; text-align:center; }
+        .button-wrap button span::after { content:""; display:block; position:absolute; z-index:1; width:calc(100% - var(--border-width)); height:calc(100% - var(--border-width)); top:calc(var(--border-width)/2); left:calc(var(--border-width)/2); box-sizing:border-box; border-radius:999vw; overflow:clip; background:linear-gradient(var(--angle-2),rgba(255,255,255,0) 0%,rgba(255,255,255,0.45) 40% 50%,rgba(255,255,255,0) 55%); mix-blend-mode:screen; pointer-events:none; background-size:200% 200%; background-position:0% 50%; background-repeat:no-repeat; transition:background-position calc(var(--anim--hover-time)*1.25) var(--anim--hover-ease),--angle-2 calc(var(--anim--hover-time)*1.25) var(--anim--hover-ease); }
+        .button-wrap button:hover span::after { background-position:25% 50%; }
+        .button-wrap button:active span::after { background-position:50% 15%; --angle-2:-15deg; }
+        .button-wrap button::after { content:""; position:absolute; z-index:1; inset:0; border-radius:999vw; width:calc(100% + var(--border-width)); height:calc(100% + var(--border-width)); top:calc(0% - var(--border-width)/2); left:calc(0% - var(--border-width)/2); padding:var(--border-width); box-sizing:border-box; background:conic-gradient(from var(--angle-1) at 50% 50%,rgba(0,0,0,0.5),rgba(0,0,0,0) 5% 40%,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0) 60% 95%,rgba(0,0,0,0.5)),linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.5)); mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); mask-composite:exclude; transition:all var(--anim--hover-time) var(--anim--hover-ease),--angle-1 500ms ease; box-shadow:inset 0 0 0 calc(var(--border-width)/2) rgba(255,255,255,0.4); }
+        .button-wrap button:hover::after { --angle-1:-125deg; }
+        .button-wrap button:active::after { --angle-1:-75deg; }
+
+        .site-footer { width:100%; padding:var(--spacing-large); text-align:center; margin-top:var(--spacing-large); }
+
+        @media (max-width:768px) { .site-header .container { flex-direction:column; justify-content:center; } }
+    </style>
+</head>
+<body>
+    <div id="tsparticles"></div>
+
+    <header class="site-header glass-container">
+        <div class="container">
+            <div class="site-branding">
+                <img src="logo.png" alt="袋鼠老師 Logo" class="header-logo">
+                <h1 class="site-title">袋鼠老師 | AI 工具箱</h1>
+            </div>
+            <nav class="main-nav">
+                <div class="button-wrap">
+                    <button id="btn-home"><span>回到幼教魔法口袋</span></button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="tool-controls" class="container">
+            <h2 class="main-section-title">AI 工具總覽</h2>
+            <div id="filter-buttons"></div>
+            <input type="text" id="search-input" placeholder="搜尋工具...">
+        </div>
+        <div class="container">
+            <div class="tool-grid" id="tool-grid">
+                <h2 id="loading-message" style="text-align:center;grid-column:1/-1;">正在從 Google Sheet 載入資料...</h2>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer glass-container">
+        <div class="container">
+            <p>© 袋鼠老師 AI 工具箱 | 合作／講座邀請：rainbowbox@gmail.com</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.4.0/tsparticles.bundle.min.js"></script>
+    <script>
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/169_SPMozq9KTE5Gqv2VqRGAvxB8LFjud/gviz/tq?tqx=out:csv&gid=1654858279';
+
+        // ── Helpers ─────────────────────────────────────────────
+        function clearEl(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+
+        function makeBtn(labelText, extraClass) {
+            const wrap = document.createElement('div');
+            wrap.className = 'button-wrap';
+            const btn = document.createElement('button');
+            if (extraClass) btn.className = extraClass;
+            const span = document.createElement('span');
+            span.textContent = labelText;
+            btn.appendChild(span);
+            wrap.appendChild(btn);
+            return { wrap, btn, span };
+        }
+
+        // ── CSV Parser ──────────────────────────────────────────
+        function parseCSVRow(row) {
+            const result = [];
+            let current = '', inQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const ch = row[i];
+                if (ch === '"') {
+                    if (inQuotes && row[i + 1] === '"') { current += '"'; i++; }
+                    else inQuotes = !inQuotes;
+                } else if (ch === ',' && !inQuotes) {
+                    result.push(current.trim()); current = '';
+                } else { current += ch; }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function parseCSV(text) {
+            return text.trim().split('\n')
+                .map(line => parseCSVRow(line))
+                .filter(cols => cols[0].toLowerCase() !== 'category')
+                .filter(cols => cols[1] && cols[1].trim())
+                .map(cols => ({
+                    category:    cols[0] || '未分類',
+                    title:       cols[1] || '',
+                    url:         cols[2] || '',
+                    description: cols[3] || '',
+                }));
+        }
+
+        // ── Card builder ────────────────────────────────────────
+        function buildCard(tool) {
+            const card = document.createElement('div');
+            card.className = 'tool-card glass-container interactive-card';
+            card.dataset.category = tool.category;
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+
+            const nameEl = document.createElement('h4');
+            nameEl.className = 'tool-name';
+            nameEl.textContent = tool.title;
+
+            const descEl = document.createElement('p');
+            descEl.className = 'tool-description';
+            descEl.textContent = tool.description || '暫無說明';
+
+            const btnsEl = document.createElement('div');
+            btnsEl.className = 'card-buttons';
+
+            if (tool.url && tool.url.startsWith('http')) {
+                const { wrap, btn } = makeBtn('前往應用 →');
+                const url = tool.url;
+                btn.addEventListener('click', () => window.open(url, '_blank', 'noopener,noreferrer'));
+                btnsEl.appendChild(wrap);
+            }
+
+            content.appendChild(nameEl);
+            content.appendChild(descEl);
+            content.appendChild(btnsEl);
+            card.appendChild(content);
+            return card;
+        }
+
+        // ── Inline filter buttons ───────────────────────────────
+        function buildFilters(tools, onFilter) {
+            const container = document.getElementById('filter-buttons');
+            clearEl(container);
+            const cats = [...new Set(tools.map(t => t.category))];
+
+            const { wrap: allWrap, btn: allBtn } = makeBtn('顯示全部');
+            allBtn.classList.add('active');
+            allBtn.addEventListener('click', () => onFilter('all', allBtn));
+            container.appendChild(allWrap);
+
+            cats.forEach(cat => {
+                const { wrap, btn } = makeBtn(cat);
+                btn.addEventListener('click', () => onFilter(cat, btn));
+                container.appendChild(wrap);
+            });
+        }
+
+        // ── Load Tools ──────────────────────────────────────────
+        async function loadTools() {
+            const toolGrid = document.getElementById('tool-grid');
+            const loadMsg  = document.getElementById('loading-message');
+            try {
+                const res = await fetch(SHEET_URL);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const tools = parseCSV(await res.text());
+                if (tools.length === 0) {
+                    loadMsg.textContent = '找不到工具資料或表格為空。';
+                    return [];
+                }
+                clearEl(toolGrid);
+                tools.forEach(tool => toolGrid.appendChild(buildCard(tool)));
+                return tools;
+            } catch (err) {
+                console.error(err);
+                loadMsg.textContent = '無法載入工具資料，請檢查網路連線或 Google Sheet 設定。';
+                return [];
+            }
+        }
+
+        // ── Filter + Search ─────────────────────────────────────
+        function initFilters(tools) {
+            const searchInput = document.getElementById('search-input');
+            const mainTitle   = document.querySelector('.main-section-title');
+            let activeFilter = 'all';
+
+            function applyFilter() {
+                const term = searchInput.value.toLowerCase().trim();
+                let hasVisible = false;
+                document.querySelectorAll('.tool-card').forEach(card => {
+                    const catMatch  = activeFilter === 'all' || card.dataset.category === activeFilter;
+                    const textMatch = !term || card.textContent.toLowerCase().includes(term);
+                    card.classList.toggle('hidden', !(catMatch && textMatch));
+                    if (catMatch && textMatch) hasVisible = true;
+                });
+                const existing = document.getElementById('no-results');
+                if (!hasVisible && !existing) {
+                    const msg = document.createElement('h2');
+                    msg.id = 'no-results';
+                    msg.style.cssText = 'text-align:center;grid-column:1/-1;';
+                    msg.textContent = '找不到符合條件的工具。';
+                    document.getElementById('tool-grid').appendChild(msg);
+                } else if (hasVisible && existing) existing.remove();
+            }
+
+            buildFilters(tools, (cat, clickedBtn) => {
+                activeFilter = cat;
+                document.querySelectorAll('#filter-buttons button').forEach(b => b.classList.remove('active'));
+                clickedBtn.classList.add('active');
+                mainTitle.style.opacity = '0';
+                setTimeout(() => {
+                    mainTitle.textContent = cat === 'all' ? 'AI 工具總覽' : cat;
+                    mainTitle.style.opacity = '1';
+                }, 150);
+                applyFilter();
+            });
+
+            searchInput.addEventListener('input', applyFilter);
+        }
+
+        // ── Particles ───────────────────────────────────────────
+        function initParticles() {
+            tsParticles.load({ id: 'tsparticles', options: {
+                fpsLimit: 60,
+                background: { color: { value: 'transparent' } },
+                particles: {
+                    number: { value: 35, density: { enable: true, area: 800 } },
+                    shape: { type: 'circle' },
+                    opacity: { value: { min: 0.05, max: 0.3 } },
+                    size: { value: { min: 1, max: 3 } },
+                    color: { value: ['#ffffff','#b0aee8','#8080c0'] },
+                    links: { enable: true, distance: 150, opacity: 0.08, width: 1, color: '#ffffff' },
+                    move: { enable: true, speed: 0.8, direction: 'none', random: true, outModes: { default: 'out' } },
+                },
+                interactivity: { events: { onHover: { enable: true, mode: 'bubble' } }, modes: { bubble: { distance: 200, size: 5, duration: 2, opacity: 0.8 } } },
+                detectRetina: true,
+            }});
+        }
+
+        // ── Init ────────────────────────────────────────────────
+        document.getElementById('btn-home').addEventListener('click', () => window.open('index.html', '_blank', 'noopener'));
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initParticles();
+            const tools = await loadTools();
+            if (tools.length > 0) initFilters(tools);
+        });
+    </script>
+</body>
+</html>
