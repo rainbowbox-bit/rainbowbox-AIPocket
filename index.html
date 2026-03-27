@@ -134,6 +134,51 @@
             .site-header .container { flex-direction:column; justify-content:center; }
             .hero-avatar { width:120px; height:120px; }
         }
+
+        /* ── Modal Overlay ─────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .modal-overlay.hidden { display: none; }
+
+        .modal-box {
+            padding: 2rem; min-width: 320px; max-width: 90vw;
+            display: flex; flex-direction: column; gap: 1rem;
+            text-align: center;
+        }
+        .modal-box h3 { font-size: 1.4rem; }
+        .modal-box p  { font-size: 0.95rem; }
+
+        #password-input {
+            background-color: var(--color-input-bg);
+            border: 1px solid var(--color-input-border);
+            border-radius: 999px; padding: 0.75rem 1.5rem;
+            color: var(--color-text-primary); font-family: inherit;
+            font-size: 1rem; width: 100%; text-align: center;
+            transition: border-color 0.3s ease;
+        }
+        #password-input:focus { outline: none; border-color: var(--color-accent); }
+
+        .modal-buttons { display: flex; gap: 0.75rem; justify-content: center; }
+
+        #password-error {
+            color: #ff8888; font-size: 0.85rem;
+            animation: shake-error 0.3s ease;
+        }
+        #password-error.hidden { display: none; }
+
+        @keyframes shake-error {
+            0%,100% { transform: translateX(0); }
+            25%      { transform: translateX(-6px); }
+            75%      { transform: translateX(6px); }
+        }
+
+        .jinghu-links { display: flex; flex-direction: column; gap: 0.75rem; }
+        .modal-close-wrap { margin-top: 0.5rem; }
     </style>
 </head>
 <body>
@@ -145,6 +190,9 @@
             <nav class="main-nav">
                 <div class="button-wrap">
                     <button id="btn-tools"><span>袋鼠老師 | AI 工具箱</span></button>
+                </div>
+                <div class="button-wrap">
+                    <button id="btn-jinghu"><span>菁湖專用 🔒</span></button>
                 </div>
                 <div class="button-wrap">
                     <button id="theme-switcher" aria-label="切換佈景主題">
@@ -201,6 +249,32 @@
             <p>© 袋鼠老師的幼教魔法口袋 | 合作／講座邀請：rainbowbox@gmail.com</p>
         </div>
     </footer>
+
+    <!-- 密碼輸入 Modal -->
+    <div id="password-modal" class="modal-overlay hidden">
+        <div class="modal-box glass-container">
+            <h3>菁湖專用</h3>
+            <p>請輸入密碼以繼續</p>
+            <input type="password" id="password-input" placeholder="輸入密碼...">
+            <div id="password-error" class="hidden">密碼錯誤，請再試一次。</div>
+            <div class="modal-buttons">
+                <div class="button-wrap"><button id="btn-password-confirm"><span>確認</span></button></div>
+                <div class="button-wrap"><button id="btn-password-cancel"><span>取消</span></button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 菁湖工具 Modal -->
+    <div id="jinghu-modal" class="modal-overlay hidden">
+        <div class="modal-box glass-container">
+            <h3>菁湖專用工具</h3>
+            <div class="jinghu-links">
+                <div class="button-wrap"><button id="btn-jinghu-1"><span>菁湖幼兒園教具系統 →</span></button></div>
+                <div class="button-wrap"><button id="btn-jinghu-2"><span>菁湖採購即時平台 →</span></button></div>
+            </div>
+            <div class="button-wrap modal-close-wrap"><button id="btn-jinghu-close"><span>關閉</span></button></div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.4.0/tsparticles.bundle.min.js"></script>
     <script>
@@ -407,6 +481,72 @@
                 detectRetina: true,
             }});
         }
+
+        // ── 菁湖專用 ────────────────────────────────────────────
+        (function() {
+            const CORRECT_PASSWORD = 'jh3370';
+            const SESSION_KEY = 'jinghu_auth';
+
+            const btnJinghu   = document.getElementById('btn-jinghu');
+            const pwModal     = document.getElementById('password-modal');
+            const jinghuModal = document.getElementById('jinghu-modal');
+            const pwInput     = document.getElementById('password-input');
+            const pwError     = document.getElementById('password-error');
+
+            function openJinghuPanel() {
+                jinghuModal.classList.remove('hidden');
+            }
+
+            function openPasswordModal() {
+                pwInput.value = '';
+                pwError.classList.add('hidden');
+                pwModal.classList.remove('hidden');
+                setTimeout(() => pwInput.focus(), 100);
+            }
+
+            btnJinghu.addEventListener('click', () => {
+                if (sessionStorage.getItem(SESSION_KEY) === '1') {
+                    openJinghuPanel();
+                } else {
+                    openPasswordModal();
+                }
+            });
+
+            document.getElementById('btn-password-confirm').addEventListener('click', () => {
+                if (pwInput.value === CORRECT_PASSWORD) {
+                    sessionStorage.setItem(SESSION_KEY, '1');
+                    pwModal.classList.add('hidden');
+                    openJinghuPanel();
+                } else {
+                    pwError.classList.remove('hidden');
+                    pwInput.value = '';
+                    pwInput.focus();
+                }
+            });
+
+            pwInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') document.getElementById('btn-password-confirm').click();
+            });
+
+            document.getElementById('btn-password-cancel').addEventListener('click', () => {
+                pwModal.classList.add('hidden');
+            });
+
+            document.getElementById('btn-jinghu-close').addEventListener('click', () => {
+                jinghuModal.classList.add('hidden');
+            });
+
+            [pwModal, jinghuModal].forEach(modal => {
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) modal.classList.add('hidden');
+                });
+            });
+
+            document.getElementById('btn-jinghu-1').addEventListener('click', () =>
+                window.open('https://jinghu-edu.pages.dev/', '_blank', 'noopener,noreferrer'));
+            document.getElementById('btn-jinghu-2').addEventListener('click', () =>
+                window.open('https://script.google.com/macros/s/AKfycbw8S-eaJgfRtIx790Ig8DNKbE5AjhV9I9jwgVKDQVwcOA47dVMJrFEDE8P7JeV0t8rD/exec', '_blank', 'noopener,noreferrer'));
+        })();
 
         // ── Init ────────────────────────────────────────────────
         document.getElementById('btn-tools').addEventListener('click', () => window.open('tools.html', '_blank', 'noopener'));
